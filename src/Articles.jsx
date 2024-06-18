@@ -1,5 +1,3 @@
-// src/Articles.js
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -15,7 +13,7 @@ const Articles = () => {
     setSelectedOption(eventKey);
     try {
       const data = await fetchAllArticles();
-      setArticles(data.articles); // Adjust according to the API response structure
+      setArticles(data); // Assuming data structure matches what is returned by fetchAllArticles()
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -44,12 +42,12 @@ const Articles = () => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      {articles && articles.length > 0 && (
+      {articles && articles.length > 0 ? (
         <div className="articles-list">
           {articles.map(article => (
             <div key={article.article_id} className="article">
               <h3>
-                <Link to={`/articles/${article.article_id}`}>{article.title}</Link> {/* Add this link */}
+                <Link to={`/articles/${article.article_id}`}>{article.title}</Link>
               </h3>
               <img src={article.article_img_url} alt={article.title} className="article-image" />
               <p><strong>Topic:</strong> {article.topic}</p>
@@ -60,6 +58,8 @@ const Articles = () => {
             </div>
           ))}
         </div>
+      ) : (
+        <p>No articles found.</p>
       )}
     </div>
   );
