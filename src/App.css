@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -39,4 +41,66 @@
 
 .read-the-docs {
   color: #888;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.nav {
+  background-color: #333;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.site-title {
+  font-size: 2rem;
+}
+
+.nav ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav a {
+  color: inherit;
+  text-decoration: none;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: .25rem;
+}
+
+.nav li:hover {
+  background-color: #777;
+}
+
+.nav li.active {
+  background-color: #555;
+}
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+/* Custom dropdown styles */
+.dropdown-menu {
+  background-color: #f8f9fa; /* Light grey background for the menu */
+}
+
+.dropdown-item {
+  color: #333; /* Dark text color */
+}
+
+.dropdown-item:hover {
+  background-color: #ddd; /* Slightly darker background on hover */
+  color: #000; /* Darker text color on hover */
 }
