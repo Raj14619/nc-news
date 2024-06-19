@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchArticleById, fetchCommentsByArticleId, updateArticleVotes } from './utils/api';
+import { fetchArticleById, fetchCommentsByArticleId, updateArticleVotes, postComment } from './utils/api';
 
 const ArticleDetail = () => {
   const { article_id } = useParams();
@@ -8,20 +8,23 @@ const ArticleDetail = () => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newComment, setNewComment] = useState({ username: '', body: '' });
+  const [postingComment, setPostingComment] = useState(false);
+  const [postError, setPostError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);  // Start loading
+        setLoading(true);
         const articleData = await fetchArticleById(article_id);
         const commentsData = await fetchCommentsByArticleId(article_id);
         setArticle(articleData);
         setComments(commentsData);
-        setLoading(false);  // End loading
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
         setError('Failed to fetch article');
-        setLoading(false);  // End loading even if there's an error
+        setLoading(false);
       }
     };
 
@@ -30,17 +33,14 @@ const ArticleDetail = () => {
 
   const handleVote = async (incVotes) => {
     try {
-      // Optimistically update the UI
       setArticle((prevArticle) => ({
         ...prevArticle,
         votes: prevArticle.votes + incVotes,
       }));
 
-      // Send the request to the server
       await updateArticleVotes(article_id, incVotes);
     } catch (err) {
       console.error('Failed to update votes:', err.response ? err.response.data : err.message);
-      // Revert the optimistic update if the request fails
       setArticle((prevArticle) => ({
         ...prevArticle,
         votes: prevArticle.votes - incVotes,
@@ -49,7 +49,31 @@ const ArticleDetail = () => {
     }
   };
 
-  if (loading) return <p>Loading article...</p>; // Check loading state
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setPostError(null);
+    setPostingComment(true);
+
+    try {
+      const postedComment = await postComment(article_id, newComment);
+      setComments((prevComments) => [postedComment, ...prevComments]);
+      setNewComment({ username: '', body: '' });
+    } catch (error) {
+      setPostError('Failed to post comment');
+    } finally {
+      setPostingComment(false);
+    }
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setNewComment((prevComment) => ({
+      ...prevComment,
+      [name]: value,
+    }));
+  };
+
+  if (loading) return <p>Loading article...</p>;
   if (error) return <div>{error}</div>;
 
   return (
@@ -66,6 +90,35 @@ const ArticleDetail = () => {
         <button onClick={() => handleVote(-1)}>Dislike</button>
       </div>
       <p><strong>Comments:</strong> {comments.length}</p>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>
+            Username:
+            <input
+              type="text"
+              name="username"
+              value={newComment.username}
+              onChange={handleChange}
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Comment:
+            <textarea
+              name="body"
+              value={newComment.body}
+              onChange={handleChange}
+              required
+            />
+          </label>
+        </div>
+        <button type="submit" disabled={postingComment}>
+          {postingComment ? 'Posting...' : 'Post Comment'}
+        </button>
+        {postError && <p>{postError}</p>}
+      </form>
       {comments.map(comment => (
         <div key={comment.comment_id}>
           <p>{comment.body}</p>
