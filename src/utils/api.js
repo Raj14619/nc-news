@@ -34,3 +34,15 @@ export const fetchCommentsByArticleId = async (id) => {
     throw error;
   }
 };
+
+export const updateArticleVotes = async (articleId, incVotes) => {
+  try {
+    const response = await api.patch(`/articles/${articleId}`, {
+      inc_votes: incVotes,
+    });
+    return response.data.article;
+  } catch (error) {
+    console.error('Error updating votes:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
