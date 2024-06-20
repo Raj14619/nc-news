@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchArticleById, fetchCommentsByArticleId, updateArticleVotes, postComment } from './utils/api';
+import { fetchArticleById, fetchCommentsByArticleId, updateArticleVotes, postComment, deleteComment } from './utils/api';
 
 const ArticleDetail = ({ user }) => {
   const { article_id } = useParams();
@@ -11,6 +11,7 @@ const ArticleDetail = ({ user }) => {
   const [newComment, setNewComment] = useState('');
   const [postingComment, setPostingComment] = useState(false);
   const [postError, setPostError] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,6 +70,16 @@ const ArticleDetail = ({ user }) => {
     setNewComment(event.target.value);
   };
 
+  const handleDeleteComment = async (commentId) => {
+    setDeleteError(null);
+    try {
+      await deleteComment(commentId);
+      setComments((prevComments) => prevComments.filter(comment => comment.comment_id !== commentId));
+    } catch (error) {
+      setDeleteError('Failed to delete comment');
+    }
+  };
+
   if (loading) return <p>Loading article...</p>;
   if (error) return <div>{error}</div>;
 
@@ -102,11 +113,15 @@ const ArticleDetail = ({ user }) => {
         </button>
         {postError && <p>{postError}</p>}
       </form>
+      {deleteError && <p>{deleteError}</p>}
       {comments.map(comment => (
         <div key={comment.comment_id}>
           <p>{comment.body}</p>
           <p>By: {comment.author}</p>
           <p>Created At: {new Date(comment.created_at).toLocaleDateString()}</p>
+          {comment.author === user && (
+            <button onClick={() => handleDeleteComment(comment.comment_id)}>Delete</button>
+          )}
           <hr />
         </div>
       ))}
