@@ -1,3 +1,5 @@
+// api.js
+
 import axios from 'axios';
 
 // Set the base URL for Axios
@@ -47,7 +49,6 @@ export const updateArticleVotes = async (articleId, incVotes) => {
   }
 };
 
-
 export const postComment = async (articleId, body, username) => {
   try {
     const response = await api.post(`/articles/${articleId}/comments`, {
@@ -61,7 +62,6 @@ export const postComment = async (articleId, body, username) => {
   }
 };
 
-
 export const deleteComment = async (commentId) => {
   try {
     await api.delete(`/comments/${commentId}`);
@@ -70,3 +70,45 @@ export const deleteComment = async (commentId) => {
     throw error;
   }
 };
+
+// New function to fetch topics
+export const fetchTopics = async () => {
+  try {
+    const response = await api.get('/topics');
+    return response.data.topics; // Assuming response.data.topics is correct based on your API
+  } catch (error) {
+    console.error('Error fetching topics:', error);
+    throw error;
+  }
+};
+
+// New function to fetch articles by topic
+export const fetchArticlesByTopic = async (topic) => {
+  try {
+    // Fetch articles based on the provided topic
+    const response = await api.get(`articles?topics=${topic}`);
+    const articles = response.data.articles;
+
+    // Filter articles by the provided topic
+    const filteredArticles = articles.filter(article => article.topic === topic);
+
+    // Format the output as desired
+    const formattedArticles = filteredArticles.map(article => ({
+      title: article.title,
+      author: article.author,
+      createdAt: new Date(article.created_at).toLocaleDateString('en-GB', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      votes: article.votes,
+      commentCount: article.comment_count,
+      imageUrl: article.article_img_url
+    }));
+
+    return formattedArticles;
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+    throw error; // Optional: propagate the error to the caller
+  }
+}

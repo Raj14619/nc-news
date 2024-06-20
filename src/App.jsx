@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Articles from './Articles';
+import ArticlesByTopic from './ArticlesByTopic';
 import ArticleDetail from './ArticleDetail';
 import Login from './Login';
+import Topics from './Topics';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const About = () => (
@@ -37,6 +39,8 @@ function App() {
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/articles" element={user ? <Articles /> : <Navigate to="/login" />} />
         <Route path="/articles/:article_id" element={user ? <ArticleDetail user={user} /> : <Navigate to="/login" />} />
+        <Route path="/topics" element={<Topics />} />
+        <Route path="/topics/:topic" element={<ArticlesByTopic />} />
         <Route path="/animals" element={<Animals />} />
         <Route path="/about" element={<About />} />
       </Routes>
