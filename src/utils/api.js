@@ -7,10 +7,19 @@ const api = axios.create({
   baseURL: 'https://be-nc-news-pmo9.onrender.com/api', // Replace with your actual backend API base URL
 });
 
-export const fetchAllArticles = async () => {
+
+export const fetchAllArticles = async (sortCriteria = 'created_at', sortOrder = 'desc') => {
   try {
-    const response = await api.get('/articles');
-    return response.data.articles; // Assuming response.data.articles is correct based on your API
+    const response = await api.get('/articles', {
+      params: {
+        sort_by: sortCriteria,
+        order: sortOrder,
+      },
+    });
+    return response.data.articles.map(article => ({
+      ...article,
+      imageUrl: article.article_img_url, // Assuming your API returns 'article_img_url' for images
+    }));
   } catch (error) {
     console.error('Error fetching articles:', error);
     throw error;
