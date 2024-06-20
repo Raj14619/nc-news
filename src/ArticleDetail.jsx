@@ -73,7 +73,7 @@ const ArticleDetail = ({ user }) => {
   const handleDeleteComment = async (commentId) => {
     setDeleteError(null);
     try {
-      await deleteComment(commentId);
+      await deleteComment(commentId); // Assuming deleteComment is implemented in utils/api.js
       setComments((prevComments) => prevComments.filter(comment => comment.comment_id !== commentId));
     } catch (error) {
       setDeleteError('Failed to delete comment');
