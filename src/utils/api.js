@@ -48,12 +48,25 @@ export const updateArticleVotes = async (articleId, incVotes) => {
 };
 
 
-export const postComment = async (articleId, comment) => {
+export const postComment = async (articleId, body, username) => {
   try {
-    const response = await api.post(`/articles/${articleId}/comments`, comment);
-    return response.data.comment; // Assuming response.data.comment is correct based on your API
+    const response = await api.post(`/articles/${articleId}/comments`, {
+      username,
+      body
+    });
+    return response.data.comment;
   } catch (error) {
     console.error('Error posting comment:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+
+export const deleteComment = async (commentId) => {
+  try {
+    await api.delete(`/comments/${commentId}`);
+  } catch (error) {
+    console.error('Error deleting comment:', error.response ? error.response.data : error.message);
     throw error;
   }
 };

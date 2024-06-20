@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchArticleById, fetchCommentsByArticleId, updateArticleVotes, postComment } from './utils/api';
 
-const ArticleDetail = () => {
+const ArticleDetail = ({ user }) => {
   const { article_id } = useParams();
   const [article, setArticle] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newComment, setNewComment] = useState({ username: '', body: '' });
+  const [newComment, setNewComment] = useState('');
   const [postingComment, setPostingComment] = useState(false);
   const [postError, setPostError] = useState(null);
 
@@ -55,9 +55,9 @@ const ArticleDetail = () => {
     setPostingComment(true);
 
     try {
-      const postedComment = await postComment(article_id, newComment);
+      const postedComment = await postComment(article_id, newComment, user);
       setComments((prevComments) => [postedComment, ...prevComments]);
-      setNewComment({ username: '', body: '' });
+      setNewComment('');
     } catch (error) {
       setPostError('Failed to post comment');
     } finally {
@@ -66,11 +66,7 @@ const ArticleDetail = () => {
   };
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setNewComment((prevComment) => ({
-      ...prevComment,
-      [name]: value,
-    }));
+    setNewComment(event.target.value);
   };
 
   if (loading) return <p>Loading article...</p>;
@@ -93,22 +89,9 @@ const ArticleDetail = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label>
-            Username:
-            <input
-              type="text"
-              name="username"
-              value={newComment.username}
-              onChange={handleChange}
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
             Comment:
             <textarea
-              name="body"
-              value={newComment.body}
+              value={newComment}
               onChange={handleChange}
               required
             />
