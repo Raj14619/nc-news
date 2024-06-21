@@ -2,26 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Dropdown from 'react-bootstrap/Dropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { fetchAllArticles } from './utils/api';
+import { fetchAllArticles } from './utils/api'; // Make sure this function is correctly implemented and imported
 import './App.css';
 
 const Articles = () => {
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState('all');
   const [articles, setArticles] = useState([]);
 
-  const handleSelect = async (eventKey) => {
-    setSelectedOption(eventKey);
+  const fetchArticles = async () => {
     try {
-      const data = await fetchAllArticles();
-      setArticles(data); // Assuming data structure matches what is returned by fetchAllArticles()
+      const data = await fetchAllArticles(); // Ensure this returns a correct response
+      setArticles(data); // Assuming data is an array of articles
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
+  const handleSelect = (eventKey) => {
+    setSelectedOption(eventKey);
+    fetchArticles();
+  };
+
   useEffect(() => {
-    // Fetch data initially when the component mounts
-    handleSelect();
+    fetchArticles();
   }, []);
 
   return (

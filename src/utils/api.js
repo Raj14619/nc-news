@@ -8,7 +8,7 @@ const api = axios.create({
 export const fetchAllArticles = async () => {
   try {
     const response = await api.get('/articles');
-    return response.data.articles; // Assuming response.data.articles is correct based on your API
+    return response.data; // Assuming response.data.articles is correct based on your API
   } catch (error) {
     console.error('Error fetching articles:', error);
     throw error;
